@@ -7,8 +7,10 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -58,6 +60,67 @@ public class IkeaHomepageSteps {
         new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(ExpectedConditions.urlContains("search"));
         assertThat(driver.getPageSource()).containsIgnoringCase(expectedText);
+    }
+
+    private static final String MAMMUT_LILLA_URL = "https://www.ikea.com/dk/da/p/mammut-bornestol-indendors-udendors-lilla-90581990/";
+    private static final String MAMMUT_GROEN_URL = "https://www.ikea.com/dk/da/p/mammut-bornestol-indendors-udendors-gron-70581986/";
+
+    @Given("user opens the MAMMUT chair product page in color {string}")
+    public void userOpensTheMammutChairProductPageInColor(String color) {
+        String url = switch (color) {
+            case "indendørs/udendørs/lilla" -> MAMMUT_LILLA_URL;
+            case "indendørs/udendørs/grøn" -> MAMMUT_GROEN_URL;
+            default -> throw new IllegalArgumentException("Unknown MAMMUT color: " + color);
+        };
+        driver.get(url);
+        new WebDriverWait(driver, Duration.ofSeconds(15))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".pipcom-price__integer")));
+
+        dismissCookieBannerIfPresent();
+    }
+
+    @When("user sets the delivery postcode to {string}")
+    public void userSetsTheDeliveryPostcodeTo(String postcode) {
+        driver.findElement(By.cssSelector("button[aria-label='Indtast postnummer']")).click();
+
+        WebElement postcodeInput = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("hnf-postalcode")));
+        postcodeInput.clear();
+        postcodeInput.sendKeys(postcode);
+
+        By saveButtonLocator = By.xpath("//div[contains(@class,'hnf-postalcode-picker-modal')]//button[normalize-space()='Gem']");
+        new WebDriverWait(driver, Duration.ofSeconds(10)).until(d -> {
+            try {
+                WebElement saveButton = d.findElement(saveButtonLocator);
+                if (saveButton.isEnabled()) {
+                    saveButton.click();
+                    return true;
+                }
+                return false;
+            } catch (StaleElementReferenceException e) {
+                return false;
+            }
+        });
+
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.invisibilityOf(postcodeInput));
+    }
+
+    @Then("the price is {string}")
+    public void thePriceIs(String expectedPrice) {
+        String integerPart = driver.findElement(By.cssSelector(".pipcom-price__integer")).getText();
+        String decimalPart = driver.findElement(By.cssSelector(".pipcom-price__decimal")).getText();
+        assertThat(integerPart + decimalPart).isEqualTo(expectedPrice);
+    }
+
+    private void dismissCookieBannerIfPresent() {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(By.id("onetrust-accept-btn-handler")))
+                    .click();
+        } catch (TimeoutException e) {
+            // cookie consent banner did not appear, nothing to dismiss
+        }
     }
 
     @After
