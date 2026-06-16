@@ -8,9 +8,9 @@ import io.cucumber.java.en.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -49,8 +49,14 @@ public class IkeaHomepageSteps {
 
     @When("user types {string} in the search box")
     public void userTypesInSearchBox(String searchTerm) {
+        dismissCookieBannerIfPresent();
+
         WebElement searchInput = driver.findElement(By.id("ikea-search-input"));
         searchInput.sendKeys(searchTerm);
+        // wait for the autocomplete dropdown to open before submitting,
+        // otherwise pressing enter is sometimes swallowed
+        new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(d -> "true".equals(searchInput.getAttribute("aria-expanded")));
         searchInput.sendKeys(Keys.ENTER);
     }
 
@@ -104,6 +110,32 @@ public class IkeaHomepageSteps {
 
         new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(ExpectedConditions.invisibilityOf(postcodeInput));
+    }
+
+    private static final String LISABO_ASKETRAESFINER_URL = "https://www.ikea.com/dk/da/p/lisabo-bord-asketraesfiner-40416498/";
+    private static final String LISABO_SORT_ASKETRAESFINER_URL = "https://www.ikea.com/dk/da/p/lisabo-bord-sort-asketraesfiner-50416501/";
+
+    @Given("user opens the LISABO table product page in color {string}")
+    public void userOpensTheLisaboTableProductPageInColor(String color) {
+        String url = switch (color) {
+            case "Asketræsfiner" -> LISABO_ASKETRAESFINER_URL;
+            case "Sort/asketræsfiner" -> LISABO_SORT_ASKETRAESFINER_URL;
+            default -> throw new IllegalArgumentException("Unknown LISABO color: " + color);
+        };
+        driver.get(url);
+        new WebDriverWait(driver, Duration.ofSeconds(15))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".pipcom-price__integer")));
+
+        dismissCookieBannerIfPresent();
+    }
+
+    @When("user sets the quantity to {int}")
+    public void userSetsTheQuantityTo(int quantity) {
+        WebElement quantityInput = driver.findElement(By.cssSelector(".pipf-quantity-stepper__input"));
+        WebElement increaseButton = driver.findElement(By.cssSelector(".pipf-quantity-stepper__increase"));
+        while (Integer.parseInt(quantityInput.getAttribute("value")) < quantity) {
+            increaseButton.click();
+        }
     }
 
     @Then("the price is {string}")
