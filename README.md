@@ -12,11 +12,36 @@ Automated UI test project for [ikea.com/dk/da](https://www.ikea.com/dk/da/), bui
 
 ## Project structure
 
+The test code is organised in four layers:
+
+```
+🔵 Feature layer (Cucumber)      - test description in Gherkin
+src/test/resources/features/*.feature
+
+🟡 Step Definitions              - translate Gherkin -> Java, hold assertions
+src/test/java/...steps/Hooks.java                - browser lifecycle (@Before/@After)
+src/test/java/...steps/HomepageSteps.java
+src/test/java/...steps/LisaboTableSteps.java
+src/test/java/...steps/MammutChairSteps.java
+src/test/java/...steps/ProductPriceSteps.java    - shared "the price is" step
+
+🟢 Page Objects (POM)            - Selenium logic per page
+src/test/java/...pages/BasePage.java             - shared driver/wait + cookie banner
+src/test/java/...pages/ProductPage.java          - shared product price reading
+src/test/java/...pages/HomePage.java
+src/test/java/...pages/LisaboTablePage.java
+src/test/java/...pages/MammutChairPage.java
+
+⚙️ Utils                         - driver, wait, config
+src/test/java/...utils/DriverManager.java        - WebDriver lifecycle (ThreadLocal)
+src/test/java/...utils/WaitHelper.java           - WebDriverWait wrappers
+src/test/java/...utils/Config.java               - base URL and timeouts
+```
+
+Plus the supporting wiring:
+
 ```
 src/main/java/...UiTestCucumberIkeaApplication.java   - Spring Boot application entry point
-src/test/resources/features/ikea_homepage.feature     - homepage and search scenarios (Gherkin)
-src/test/resources/features/mammut_chair.feature       - MAMMUT chair product page scenarios (Gherkin)
-src/test/java/...steps/IkeaHomepageSteps.java          - Cucumber step definitions (Selenium)
 src/test/java/...RunCucumberTest.java                  - Cucumber runner (JUnit Platform Suite)
 src/test/java/...CucumberSpringConfiguration.java      - Cucumber + Spring integration
 ```
@@ -27,6 +52,10 @@ The `ikea_homepage.feature` file contains:
 
 1. **Open the IKEA Denmark homepage** – checks the page title and the visibility of the cookie consent banner.
 2. **Search for a product** – enters a query ("BILLY") into the search box and verifies that the results contain the searched term.
+
+The `lisabo_table.feature` file contains:
+
+1. **LISABO table price check** – opens the LISABO table product page in a given color (`Asketræsfiner` and `Sort/asketræsfiner`), sets the quantity and verifies that the price is "1.100.-".
 
 The `mammut_chair.feature` file contains:
 
