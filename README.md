@@ -85,6 +85,37 @@ mvnw.cmd test
 
 Tests run in headless Chrome. Test results (Surefire reports) are written to `target/surefire-reports`.
 
+> **Note:** the tests run against the live ikea.com site and can be flaky
+> (search autocomplete, price re-rendering after a postcode change, etc.).
+> A failing run is often transient — re-run before treating it as a real defect.
+
+## Reporting (Allure)
+
+Cucumber results are collected by Allure into `target/allure-results` on every
+test run (configured via the `AllureCucumber7Jvm` plugin in `RunCucumberTest`).
+
+Generate and open the HTML report:
+
+```bash
+mvnw.cmd allure:serve      # build a temporary report and open it in the browser
+mvnw.cmd allure:report     # write a static report to target/site/allure-maven-plugin
+```
+
+## Roadmap — "PRO STANDARD" checklist
+
+What makes this an industry-level framework, and where we are:
+
+| # | Criterion | Status |
+|---|-----------|--------|
+| 1 | POM (Page Object Model) | ✅ done |
+| 2 | Cucumber (BDD) | ✅ done |
+| 3 | DriverFactory | ✅ done |
+| 4 | Explicit waits | ✅ done |
+| 5 | Config system | 🟡 partial — constants in `utils/Config`, not externalised to properties/env |
+| 6 | Reporting (Allure) | ✅ done |
+| 7 | CI/CD | ⬜ todo |
+| 8 | Screenshot on failure | ⬜ todo |
+
 ## Running the application
 
 ```bash
