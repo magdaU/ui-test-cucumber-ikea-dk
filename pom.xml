@@ -13,18 +13,25 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>ui-test-cucumber-ikea</name>
     <description>ui-test-cucumber-ikea</description>
-    <url/>
+    <url>https://github.com/magdaU/ui-test-cucumber-ikea</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <name>Magdalena Ukleja</name>
+            <email>magdalena.ukleja@gmail.com</email>
+        </developer>
     </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:https://github.com/magdaU/ui-test-cucumber-ikea.git</connection>
+        <developerConnection>scm:git:git@github.com:magdaU/ui-test-cucumber-ikea.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/magdaU/ui-test-cucumber-ikea</url>
     </scm>
     <properties>
         <java.version>21</java.version>
