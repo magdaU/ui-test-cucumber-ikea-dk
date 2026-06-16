@@ -2,6 +2,7 @@ package com.ikea.uitestcucumberikeadk.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -30,15 +31,29 @@ public class HomePage extends BasePage {
         dismissCookieBannerIfPresent();
 
         WebElement searchInput = driver.findElement(SEARCH_INPUT);
+        searchInput.clear();
         searchInput.sendKeys(term);
         // wait for the autocomplete dropdown to open before submitting,
         // otherwise pressing enter is sometimes swallowed
         wait.until(d -> "true".equals(searchInput.getAttribute("aria-expanded")));
-        searchInput.sendKeys(Keys.ENTER);
+
+        // Enter is occasionally swallowed by the autocomplete widget, so keep
+        // re-submitting until the browser actually navigates to the results page
+        wait.until(d -> {
+            if (d.getCurrentUrl().contains("search")) {
+                return true;
+            }
+            try {
+                searchInput.sendKeys(Keys.ENTER);
+            } catch (StaleElementReferenceException e) {
+                // input detached because navigation already started
+            }
+            return d.getCurrentUrl().contains("search");
+        }, Config.SEARCH_TIMEOUT);
     }
 
     public String getResultsPageSource() {
-        wait.untilUrlContains("search");
+        wait.untilUrlContains("search", Config.SEARCH_TIMEOUT);
         return driver.getPageSource();
     }
 }

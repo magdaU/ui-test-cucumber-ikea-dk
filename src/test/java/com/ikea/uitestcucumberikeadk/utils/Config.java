@@ -11,6 +11,7 @@ public final class Config {
 
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
     public static final Duration PRODUCT_PAGE_TIMEOUT = Duration.ofSeconds(15);
+    public static final Duration SEARCH_TIMEOUT = Duration.ofSeconds(20);
     public static final Duration COOKIE_BANNER_TIMEOUT = Duration.ofSeconds(5);
 
     private Config() {

@@ -29,6 +29,10 @@ public class WaitHelper {
         return wait(Config.DEFAULT_TIMEOUT).until(condition);
     }
 
+    public <T> T until(Function<WebDriver, T> condition, Duration timeout) {
+        return wait(timeout).until(condition);
+    }
+
     public WebElement untilPresent(By locator, Duration timeout) {
         return wait(timeout).until(ExpectedConditions.presenceOfElementLocated(locator));
     }
@@ -47,5 +51,9 @@ public class WaitHelper {
 
     public void untilUrlContains(String fragment) {
         wait(Config.DEFAULT_TIMEOUT).until(ExpectedConditions.urlContains(fragment));
+    }
+
+    public void untilUrlContains(String fragment, Duration timeout) {
+        wait(timeout).until(ExpectedConditions.urlContains(fragment));
     }
 }

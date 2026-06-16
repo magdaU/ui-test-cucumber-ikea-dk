@@ -1,6 +1,8 @@
 package com.ikea.uitestcucumberikeadk.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 
 import com.ikea.uitestcucumberikeadk.utils.Config;
@@ -24,6 +26,16 @@ public class ProductPage extends BasePage {
     }
 
     public String getPrice() {
+        // the price can re-render (e.g. after a postcode/delivery change) and is
+        // briefly empty, so wait until the integer part is actually rendered
+        wait.until(d -> {
+            try {
+                return !d.findElement(PRICE_INTEGER).getText().isBlank();
+            } catch (StaleElementReferenceException | NoSuchElementException e) {
+                return false;
+            }
+        }, Config.PRODUCT_PAGE_TIMEOUT);
+
         String integerPart = driver.findElement(PRICE_INTEGER).getText();
         String decimalPart = driver.findElement(PRICE_DECIMAL).getText();
         return integerPart + decimalPart;
