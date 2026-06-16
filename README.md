@@ -22,11 +22,15 @@ src/test/resources/features/*.feature
 src/test/java/...steps/Hooks.java                - browser lifecycle (@Before/@After)
 src/test/java/...steps/HomepageSteps.java
 src/test/java/...steps/LisaboTableSteps.java
+src/test/java/...steps/MammutChairSteps.java
+src/test/java/...steps/ProductPriceSteps.java    - shared "the price is" step
 
 🟢 Page Objects (POM)            - Selenium logic per page
 src/test/java/...pages/BasePage.java             - shared driver/wait + cookie banner
+src/test/java/...pages/ProductPage.java          - shared product price reading
 src/test/java/...pages/HomePage.java
 src/test/java/...pages/LisaboTablePage.java
+src/test/java/...pages/MammutChairPage.java
 
 ⚙️ Utils                         - driver, wait, config
 src/test/java/...utils/DriverManager.java        - WebDriver lifecycle (ThreadLocal)
@@ -48,6 +52,14 @@ The `ikea_homepage.feature` file contains:
 
 1. **Open the IKEA Denmark homepage** – checks the page title and the visibility of the cookie consent banner.
 2. **Search for a product** – enters a query ("BILLY") into the search box and verifies that the results contain the searched term.
+
+The `lisabo_table.feature` file contains:
+
+1. **LISABO table price check** – opens the LISABO table product page in a given color (`Asketræsfiner` and `Sort/asketræsfiner`), sets the quantity and verifies that the price is "1.100.-".
+
+The `mammut_chair.feature` file contains:
+
+1. **MAMMUT Børnestol price check** – opens the MAMMUT chair product page in a given color (`indendørs/udendørs/lilla` and `indendørs/udendørs/grøn`), sets the delivery postcode (8000 and 8200) and verifies that the price is "139.-".
 
 ## Requirements
 

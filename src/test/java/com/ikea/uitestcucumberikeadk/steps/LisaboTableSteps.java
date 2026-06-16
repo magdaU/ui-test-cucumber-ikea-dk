@@ -1,16 +1,14 @@
 package com.ikea.uitestcucumberikeadk.steps;
 
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import com.ikea.uitestcucumberikeadk.pages.LisaboTablePage;
 import com.ikea.uitestcucumberikeadk.utils.DriverManager;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Step definitions for the LISABO table product page feature.
+ * The price assertion lives in {@link ProductPriceSteps}.
  */
 public class LisaboTableSteps {
 
@@ -31,10 +29,5 @@ public class LisaboTableSteps {
     @When("user sets the quantity to {int}")
     public void userSetsTheQuantityTo(int quantity) {
         lisaboTablePage().setQuantity(quantity);
-    }
-
-    @Then("the price is {string}")
-    public void thePriceIs(String expectedPrice) {
-        assertThat(lisaboTablePage().getPrice()).isEqualTo(expectedPrice);
     }
 }

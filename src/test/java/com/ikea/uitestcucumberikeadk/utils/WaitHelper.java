@@ -37,6 +37,14 @@ public class WaitHelper {
         return wait(timeout).until(ExpectedConditions.elementToBeClickable(locator));
     }
 
+    public WebElement untilVisible(By locator, Duration timeout) {
+        return wait(timeout).until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    public void untilInvisible(WebElement element, Duration timeout) {
+        wait(timeout).until(ExpectedConditions.invisibilityOf(element));
+    }
+
     public void untilUrlContains(String fragment) {
         wait(Config.DEFAULT_TIMEOUT).until(ExpectedConditions.urlContains(fragment));
     }
