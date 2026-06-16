@@ -95,6 +95,8 @@ Tests run in headless Chrome. Test results (Surefire reports) are written to `ta
 
 Cucumber results are collected by Allure into `target/allure-results` on every
 test run (configured via the `AllureCucumber7Jvm` plugin in `RunCucumberTest`).
+When a scenario fails, a screenshot of the browser is captured in `Hooks` and
+attached to the failing scenario, so it shows up directly in the Allure report.
 
 Generate and open the HTML report:
 
@@ -124,7 +126,7 @@ What makes this an industry-level framework, and where we are:
 | 5 | Config system | 🟡 partial — constants in `utils/Config`, not externalised to properties/env |
 | 6 | Reporting (Allure) | ✅ done |
 | 7 | CI/CD | ✅ done |
-| 8 | Screenshot on failure | ⬜ todo |
+| 8 | Screenshot on failure | ✅ done |
 
 ## Running the application
 
