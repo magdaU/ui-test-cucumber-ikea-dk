@@ -100,6 +100,20 @@ public class IkeaHomepageSteps {
         assertThat(integerPart + decimalPart).isEqualTo(expectedPrice);
     }
 
+    @Then("the availability information is displayed")
+    public void theAvailabilityInformationIsDisplayed() {
+        // the delivery/availability section loads asynchronously, so wait for it
+        String pageText = new WebDriverWait(driver, Duration.ofSeconds(15))
+                .until(d -> {
+                    String source = d.getPageSource();
+                    return (source.contains("Levering")
+                            || source.contains("Afhentning")
+                            || source.toLowerCase().contains("lager")) ? source : null;
+                });
+        assertThat(pageText)
+                .containsAnyOf("Levering", "Afhentning", "lager", "Lager");
+    }
+
     private void dismissCookieBannerIfPresent() {
         try {
             new WebDriverWait(driver, Duration.ofSeconds(5))
