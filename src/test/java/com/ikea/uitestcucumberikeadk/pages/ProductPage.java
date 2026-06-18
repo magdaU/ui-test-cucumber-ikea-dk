@@ -3,6 +3,7 @@ package com.ikea.uitestcucumberikeadk.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 
 import com.ikea.uitestcucumberikeadk.utils.Config;
@@ -39,5 +40,25 @@ public class ProductPage extends BasePage {
         String integerPart = driver.findElement(PRICE_INTEGER).getText();
         String decimalPart = driver.findElement(PRICE_DECIMAL).getText();
         return integerPart + decimalPart;
+    }
+
+    /**
+     * The delivery/availability section loads asynchronously after the rest of
+     * the page. IKEA changes its CSS class names often, so instead of a brittle
+     * selector we wait for the section's Danish copy (delivery / collection /
+     * stock) to appear in the rendered page.
+     */
+    public boolean isAvailabilityInformationDisplayed() {
+        try {
+            wait.until(d -> {
+                String source = d.getPageSource();
+                return source.contains("Levering")
+                        || source.contains("Afhentning")
+                        || source.toLowerCase().contains("lager");
+            }, Config.PRODUCT_PAGE_TIMEOUT);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 }
